@@ -3,35 +3,60 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Impro Vote · Résultats</title>
+  <title>Écran · Impro Vote Live</title>
   <link rel="stylesheet" href="./style.css" />
 </head>
-<body>
-  <main class="page screen-page">
-    <section class="header">
-      <p class="eyebrow">Écran résultats</p>
-      <h1 id="screenTitle">Vote en direct</h1>
-      <p id="screenSubtitle">Les résultats se mettent à jour automatiquement.</p>
+<body class="screen-bg">
+  <main id="screenPanel" class="screen-stage">
+    <section id="missingRoom" class="screen-message" hidden>
+      <h1>Salle introuvable</h1>
+      <p>Le lien écran doit contenir une salle.</p>
     </section>
 
-    <section class="card">
-      <div class="status-pill"><span id="statusDot" class="dot"></span><span id="statusText">Chargement…</span></div>
-      <div class="big-timer" id="timerText">--</div>
-
-      <div class="results">
-        <div class="result-row">
-          <div class="team-name" id="team1Name">Équipe 1</div>
-          <div class="score" id="team1Score">0</div>
-          <div class="plus-one" id="plusTeam1">+1</div>
-        </div>
-        <div class="result-row">
-          <div class="team-name" id="team2Name">Équipe 2</div>
-          <div class="score" id="team2Score">0</div>
-          <div class="plus-one" id="plusTeam2">+1</div>
-        </div>
+    <section id="screenContent" class="screen-content" hidden>
+      <div class="screen-header">
+        <img id="screenMainImage" class="screen-main-image" alt="Image principale" hidden />
+        <p id="screenSubtitle" class="screen-subtitle">Vote du public</p>
+        <h1 id="screenTitle">Match d'improvisation</h1>
       </div>
 
-      <div class="winner" id="winnerBox" hidden></div>
+      <div class="screen-status-row">
+        <div id="screenStatus" class="screen-status">En attente du vote</div>
+        <div id="screenTimer" class="screen-timer">--</div>
+      </div>
+
+      <section class="scoreboard">
+        <article id="team1Card" class="score-card">
+          <div class="score-card-media">
+            <img id="team1ScreenImage" alt="Équipe 1" hidden />
+          </div>
+          <div class="score-card-body">
+            <h2 id="team1ScreenName">Équipe 1</h2>
+            <div id="team1Score" class="score-number">0</div>
+            <div id="team1Plus" class="plus-one" aria-hidden="true">+1</div>
+          </div>
+        </article>
+
+        <article id="team2Card" class="score-card">
+          <div class="score-card-media">
+            <img id="team2ScreenImage" alt="Équipe 2" hidden />
+          </div>
+          <div class="score-card-body">
+            <h2 id="team2ScreenName">Équipe 2</h2>
+            <div id="team2Score" class="score-number">0</div>
+            <div id="team2Plus" class="plus-one" aria-hidden="true">+1</div>
+          </div>
+        </article>
+      </section>
+
+      <div class="progress-wrap">
+        <div id="progressBar" class="progress-bar"></div>
+      </div>
+
+      <footer class="screen-footer">
+        <span id="totalScreenVotes">0 vote</span>
+        <strong id="winnerText"></strong>
+      </footer>
     </section>
   </main>
 

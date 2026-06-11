@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Réglages · Impro Vote Live</title>
+  <link rel="stylesheet" href="./style.css" />
+</head>
+<body class="app-bg">
+  <main class="page-shell">
+    <section id="missingRoom" class="panel-card" hidden>
+      <h1>Salle introuvable</h1>
+      <p>Retourne à l'accueil pour créer ou ouvrir une salle.</p>
+      <a class="primary-link" href="./index.html">Accueil</a>
+    </section>
+
+    <section id="authPanel" class="auth-card panel-card" hidden>
+      <p class="eyebrow">Accès réglages</p>
+      <h1>Mot de passe de la salle</h1>
+      <p class="muted">Salle : <strong id="authRoomName"></strong></p>
+      <form id="authForm" class="form-grid">
+        <label>
+          <span>Mot de passe arbitre</span>
+          <input id="authPassword" type="password" autocomplete="current-password" required />
+        </label>
+        <button class="primary-btn" type="submit">Entrer</button>
+        <p id="authError" class="status-text error"></p>
+      </form>
+    </section>
+
+    <section id="settingsPanel" hidden>
+      <div class="topbar">
+        <div>
+          <p class="eyebrow">Réglages de salle</p>
+          <h1 id="pageTitle">Configuration</h1>
+          <p class="muted">Modifie les textes et colle les URL de tes images. Les images sont optionnelles.</p>
+        </div>
+        <div class="topbar-actions">
+          <a class="ghost-link" id="openAdminLink" href="#">Admin</a>
+          <a class="ghost-link" href="./index.html">Accueil</a>
+        </div>
+      </div>
+
+      <div class="settings-layout">
+        <form id="settingsForm" class="panel-card form-grid settings-form">
+          <h2>Identité du spectacle</h2>
+          <label>
+            <span>Gros titre / nom du spectacle</span>
+            <input id="titleInput" placeholder="ex : La grande soirée impro" />
+          </label>
+          <label>
+            <span>Sous-titre court</span>
+            <input id="subtitleInput" placeholder="ex : Vote du public" />
+          </label>
+          <label>
+            <span>Image principale, optionnelle</span>
+            <input id="mainImageInput" placeholder="https://..." inputmode="url" />
+            <small>Recommandé : format 16:9, par exemple 1920×1080 px. Coins arrondis automatiquement.</small>
+          </label>
+
+          <div class="divider"></div>
+          <h2>Équipes</h2>
+          <div class="two-cols">
+            <label>
+              <span>Nom équipe 1</span>
+              <input id="team1NameInput" />
+            </label>
+            <label>
+              <span>Nom équipe 2</span>
+              <input id="team2NameInput" />
+            </label>
+          </div>
+          <div class="two-cols">
+            <label>
+              <span>Image équipe 1, optionnelle</span>
+              <input id="team1ImageInput" placeholder="https://..." inputmode="url" />
+              <small>Recommandé : carré, 1000×1000 px ou plus.</small>
+            </label>
+            <label>
+              <span>Image équipe 2, optionnelle</span>
+              <input id="team2ImageInput" placeholder="https://..." inputmode="url" />
+              <small>Recommandé : carré, 1000×1000 px ou plus.</small>
+            </label>
+          </div>
+
+          <div class="divider"></div>
+          <label>
+            <span>Durée du vote, en secondes</span>
+            <input id="durationInput" type="number" min="5" max="300" step="1" />
+            <small>Exemple : 30 secondes. Minimum 5, maximum 300.</small>
+          </label>
+
+          <div class="actions-row sticky-actions">
+            <button class="primary-btn" type="submit">Enregistrer</button>
+            <a class="ghost-link" href="https://img.tedomum.net/" target="_blank" rel="noopener">Uploader une image</a>
+          </div>
+          <p id="saveStatus" class="status-text" role="status"></p>
+        </form>
+
+        <aside class="side-stack">
+          <section class="panel-card preview-card">
+            <h2>Aperçu</h2>
+            <div class="preview-stage">
+              <img id="mainPreview" class="main-preview" alt="Image principale" hidden />
+              <p id="previewSubtitle" class="eyebrow">Vote du public</p>
+              <h3 id="previewTitle">Match d'improvisation</h3>
+              <div class="preview-teams">
+                <div class="preview-team">
+                  <img id="team1Preview" alt="Équipe 1" hidden />
+                  <strong id="team1PreviewName">Équipe 1</strong>
+                </div>
+                <div class="versus">VS</div>
+                <div class="preview-team">
+                  <img id="team2Preview" alt="Équipe 2" hidden />
+                  <strong id="team2PreviewName">Équipe 2</strong>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section class="panel-card links-card">
+            <h2>Liens de la salle</h2>
+            <p class="muted">À partager ou afficher en QR code avec ton outil préféré.</p>
+            <div class="link-row"><span>Vote public</span><input id="voteLink" readonly /><button data-copy="voteLink">Copier</button></div>
+            <div class="link-row"><span>Écran</span><input id="screenLink" readonly /><button data-copy="screenLink">Copier</button></div>
+            <div class="link-row"><span>Arbitre</span><input id="adminLink" readonly /><button data-copy="adminLink">Copier</button></div>
+            <div class="link-row"><span>Réglages</span><input id="settingsLink" readonly /><button data-copy="settingsLink">Copier</button></div>
+          </section>
+        </aside>
+      </div>
+    </section>
+  </main>
+
+  <script type="module" src="./settings.js"></script>
+</body>
+</html>

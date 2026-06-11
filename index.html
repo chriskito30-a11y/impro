@@ -3,25 +3,51 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Impro Vote</title>
+  <title>Impro Vote Live</title>
   <link rel="stylesheet" href="./style.css" />
 </head>
-<body>
-  <main class="page">
-    <section class="header">
-      <p class="eyebrow">Impro Vote</p>
-      <h1>Vote public en direct</h1>
-      <p>Choisis la page à ouvrir : arbitre, public ou écran de résultats.</p>
+<body class="app-bg">
+  <main class="page-shell index-shell">
+    <section class="hero-card glow-card">
+      <p class="eyebrow">Impro Vote Live</p>
+      <h1>Crée une salle de vote en direct pour ton spectacle d'impro.</h1>
+      <p class="lead">Une salle, un mot de passe arbitre, des liens publics pour voter et afficher les résultats. Simple, rapide, stylé.</p>
+
+      <form id="roomForm" class="form-grid big-form">
+        <label>
+          <span>Nom de la salle</span>
+          <input id="roomInput" autocomplete="off" placeholder="ex : cabaret-impro-juin" required />
+          <small>Utilisé dans les liens. Lettres, chiffres et tirets uniquement.</small>
+        </label>
+        <label>
+          <span>Mot de passe arbitre</span>
+          <input id="passwordInput" type="password" autocomplete="new-password" placeholder="Pour admin et réglages" required minlength="4" />
+          <small>Il ne sera pas mis dans les liens publics.</small>
+        </label>
+        <div class="actions-row">
+          <button class="primary-btn" type="submit">Créer / ouvrir la salle</button>
+          <button class="ghost-btn" type="button" id="randomRoomBtn">Nom aléatoire</button>
+        </div>
+        <p id="status" class="status-text" role="status"></p>
+      </form>
     </section>
 
-    <section class="card">
-      <h2>Pages disponibles</h2>
-      <div class="home-links">
-        <a class="button-link" href="./admin.html">Page arbitre</a>
-        <a class="button-link secondary" href="./vote.html">Page public</a>
-        <a class="button-link secondary" href="./screen.html">Écran résultats</a>
-      </div>
+    <section class="feature-grid">
+      <article class="mini-card">
+        <strong>1. Configure</strong>
+        <span>Titre du spectacle, image principale, équipes, images carrées et durée du vote.</span>
+      </article>
+      <article class="mini-card">
+        <strong>2. Partage</strong>
+        <span>Un lien public pour le vote, un lien écran pour le vidéoprojecteur.</span>
+      </article>
+      <article class="mini-card">
+        <strong>3. Lance</strong>
+        <span>L'arbitre clique, le public vote, l'écran se met à jour en direct.</span>
+      </article>
     </section>
   </main>
+
+  <script type="module" src="./index.js"></script>
 </body>
 </html>

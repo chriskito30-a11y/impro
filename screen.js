@@ -1,114 +1,116 @@
-import { db, ref, onValue, VOTE_PATH } from "./firebase-config.js";
+import { db, ref, onValue } from "./firebase-config.js";
+import {
+  $,
+  getRoomIdFromUrl,
+  roomPath,
+  safeConfig,
+  countVotes,
+  remainingSeconds,
+  isVoteOpen,
+  formatTimer,
+  setOptionalImage,
+  winnerLabel
+} from "./core.js";
 
-const screenTitle = document.querySelector("#screenTitle");
-const screenSubtitle = document.querySelector("#screenSubtitle");
-const statusDot = document.querySelector("#statusDot");
-const statusText = document.querySelector("#statusText");
-const timerText = document.querySelector("#timerText");
-const team1Name = document.querySelector("#team1Name");
-const team2Name = document.querySelector("#team2Name");
-const team1Score = document.querySelector("#team1Score");
-const team2Score = document.querySelector("#team2Score");
-const plusTeam1 = document.querySelector("#plusTeam1");
-const plusTeam2 = document.querySelector("#plusTeam2");
-const winnerBox = document.querySelector("#winnerBox");
+const roomId = getRoomIdFromUrl();
+let config = safeConfig();
+let currentVote = { active: false, roundId: "", votes: {} };
+let previousCounts = { team1: 0, team2: 0, total: 0 };
+let previousRoundId = "";
+let hasRendered = false;
+let tick = null;
 
-const voteRef = ref(db, VOTE_PATH);
-let currentVote = null;
-let previousCounts = { team1: 0, team2: 0 };
-let hasInitialRender = false;
-let timer = null;
+if (!roomId) {
+  $("#missingRoom").hidden = false;
+} else {
+  $("#screenContent").hidden = false;
+  bind();
+}
 
-function countVotes(votes = {}) {
-  let team1 = 0;
-  let team2 = 0;
-
-  Object.values(votes || {}).forEach((vote) => {
-    if (vote?.choice === "team1") team1 += 1;
-    if (vote?.choice === "team2") team2 += 1;
+function bind() {
+  onValue(ref(db, roomPath(roomId, "config")), (snap) => {
+    config = safeConfig(snap.val() || {});
+    render();
   });
 
-  return { team1, team2, total: team1 + team2 };
+  onValue(ref(db, roomPath(roomId, "currentVote")), (snap) => {
+    currentVote = snap.val() || { active: false, roundId: "", votes: {} };
+    const counts = countVotes(currentVote);
+
+    if (currentVote.roundId && currentVote.roundId !== previousRoundId) {
+      previousRoundId = currentVote.roundId;
+      previousCounts = counts;
+      hasRendered = true;
+    } else if (hasRendered) {
+      if (counts.team1 > previousCounts.team1) flashPlus("team1", counts.team1 - previousCounts.team1);
+      if (counts.team2 > previousCounts.team2) flashPlus("team2", counts.team2 - previousCounts.team2);
+      previousCounts = counts;
+    } else {
+      previousCounts = counts;
+      hasRendered = true;
+    }
+
+    render();
+  });
+
+  tick = setInterval(render, 250);
 }
 
-function getRemainingSeconds(data) {
-  if (!data?.startedAt || !data?.durationSec) return 0;
-  const endAt = data.startedAt + data.durationSec * 1000;
-  return Math.max(0, Math.ceil((endAt - Date.now()) / 1000));
-}
-
-function isOpen(data) {
-  return Boolean(data?.active) && getRemainingSeconds(data) > 0;
-}
-
-function showPlus(element, amount) {
-  element.textContent = `+${amount}`;
-  element.classList.remove("show");
-  void element.offsetWidth;
-  element.classList.add("show");
-}
-
-function getWinnerText(data, counts) {
-  if (counts.total === 0) return "Aucun vote enregistré.";
-  if (counts.team1 > counts.team2) return `Victoire : ${data.team1 || "Équipe 1"}`;
-  if (counts.team2 > counts.team1) return `Victoire : ${data.team2 || "Équipe 2"}`;
-  return "Égalité !";
+function flashPlus(team, delta = 1) {
+  const el = team === "team1" ? $("#team1Plus") : $("#team2Plus");
+  const card = team === "team1" ? $("#team1Card") : $("#team2Card");
+  el.textContent = `+${delta}`;
+  el.classList.remove("show-plus");
+  card.classList.remove("score-bump");
+  void el.offsetWidth;
+  el.classList.add("show-plus");
+  card.classList.add("score-bump");
 }
 
 function render() {
-  const data = currentVote;
+  const counts = countVotes(currentVote);
+  const remaining = remainingSeconds(currentVote);
+  const open = isVoteOpen(currentVote);
+  const expired = currentVote?.active && remaining <= 0;
+  const duration = Number(currentVote?.durationSec || config.durationSec || 30);
+  const progress = open || expired ? Math.max(0, Math.min(100, (remaining / duration) * 100)) : 0;
 
-  if (!data?.roundId) {
-    screenTitle.textContent = "En attente du vote";
-    screenSubtitle.textContent = "L’arbitre doit lancer une nouvelle session.";
-    statusDot.classList.remove("open");
-    statusText.textContent = "Aucun vote";
-    timerText.textContent = "--";
-    team1Name.textContent = "Équipe 1";
-    team2Name.textContent = "Équipe 2";
-    team1Score.textContent = "0";
-    team2Score.textContent = "0";
-    winnerBox.hidden = true;
-    previousCounts = { team1: 0, team2: 0 };
-    hasInitialRender = false;
-    return;
+  $("#screenTitle").textContent = config.title;
+  $("#screenSubtitle").textContent = config.subtitle;
+  $("#team1ScreenName").textContent = config.team1Name;
+  $("#team2ScreenName").textContent = config.team2Name;
+  $("#team1Score").textContent = counts.team1;
+  $("#team2Score").textContent = counts.team2;
+  $("#totalScreenVotes").textContent = `${counts.total} vote${counts.total > 1 ? "s" : ""}`;
+  $("#progressBar").style.width = `${progress}%`;
+
+  setOptionalImage($("#screenMainImage"), config.mainImage, config.title);
+  setOptionalImage($("#team1ScreenImage"), config.team1Image, config.team1Name);
+  setOptionalImage($("#team2ScreenImage"), config.team2Image, config.team2Name);
+
+  $("#team1Card").classList.toggle("leading", counts.team1 > counts.team2);
+  $("#team2Card").classList.toggle("leading", counts.team2 > counts.team1);
+
+  if (open) {
+    $("#screenStatus").textContent = "Vote en cours";
+    $("#screenTimer").textContent = formatTimer(remaining);
+    $("#winnerText").textContent = "";
+    document.body.classList.add("vote-live");
+    document.body.classList.remove("vote-ended");
+  } else if (expired || currentVote?.roundId) {
+    $("#screenStatus").textContent = "Vote terminé";
+    $("#screenTimer").textContent = "FIN";
+    $("#winnerText").textContent = counts.total ? `Résultat : ${winnerLabel(counts, config)}` : "Aucun vote";
+    document.body.classList.remove("vote-live");
+    document.body.classList.add("vote-ended");
+  } else {
+    $("#screenStatus").textContent = "En attente du vote";
+    $("#screenTimer").textContent = "--";
+    $("#winnerText").textContent = "";
+    document.body.classList.remove("vote-live", "vote-ended");
   }
-
-  const counts = countVotes(data.votes);
-  const open = isOpen(data);
-  const remaining = getRemainingSeconds(data);
-
-  if (hasInitialRender) {
-    const diff1 = counts.team1 - previousCounts.team1;
-    const diff2 = counts.team2 - previousCounts.team2;
-    if (diff1 > 0) showPlus(plusTeam1, diff1);
-    if (diff2 > 0) showPlus(plusTeam2, diff2);
-  }
-
-  previousCounts = counts;
-  hasInitialRender = true;
-
-  screenTitle.textContent = open ? "Vote en cours" : "Vote terminé";
-  screenSubtitle.textContent = open
-    ? "Les résultats se mettent à jour en direct."
-    : `${counts.total} vote${counts.total > 1 ? "s" : ""} enregistré${counts.total > 1 ? "s" : ""}.`;
-
-  statusDot.classList.toggle("open", open);
-  statusText.textContent = open ? "Vote ouvert" : "Vote fermé";
-  timerText.textContent = open ? `${remaining}s` : "0s";
-  team1Name.textContent = data.team1 || "Équipe 1";
-  team2Name.textContent = data.team2 || "Équipe 2";
-  team1Score.textContent = counts.team1;
-  team2Score.textContent = counts.team2;
-
-  winnerBox.hidden = open;
-  if (!open) winnerBox.textContent = getWinnerText(data, counts);
 }
 
-onValue(voteRef, (snapshot) => {
-  currentVote = snapshot.val();
-  render();
+window.addEventListener("beforeunload", () => {
+  if (tick) clearInterval(tick);
 });
-
-timer = setInterval(render, 250);
-window.addEventListener("beforeunload", () => clearInterval(timer));

@@ -3,28 +3,33 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Impro Vote · Public</title>
+  <title>Vote · Impro Vote Live</title>
   <link rel="stylesheet" href="./style.css" />
 </head>
-<body>
-  <main class="page">
-    <section class="header">
-      <p class="eyebrow">Vote public</p>
-      <h1>Votez !</h1>
-      <p id="voteSubtitle">Attente du lancement par l’arbitre.</p>
+<body class="app-bg vote-body">
+  <main class="vote-shell">
+    <section id="missingRoom" class="panel-card" hidden>
+      <h1>Salle introuvable</h1>
+      <p>Le lien de vote doit contenir une salle.</p>
     </section>
 
-    <section class="card">
-      <div class="status-pill"><span id="statusDot" class="dot"></span><span id="statusText">Chargement…</span></div>
-      <div class="big-timer" id="timerText">--</div>
-      <p class="muted" id="instructionText">Le vote apparaîtra ici dès qu’il sera lancé.</p>
+    <section id="votePanel" class="vote-card" hidden>
+      <img id="voteMainImage" class="vote-main-image" alt="Image du spectacle" hidden />
+      <p id="voteSubtitle" class="eyebrow">Vote du public</p>
+      <h1 id="voteTitle">Match d'improvisation</h1>
+      <div id="voteTimer" class="vote-timer">En attente</div>
+      <p id="voteMessage" class="vote-message">Attends que l'arbitre lance le vote.</p>
 
       <div class="vote-buttons">
-        <button id="voteTeam1" class="vote-button" disabled>Équipe 1</button>
-        <button id="voteTeam2" class="vote-button team2" disabled>Équipe 2</button>
+        <button id="team1Button" class="team-vote-button" data-choice="team1">
+          <img id="team1VoteImage" alt="Équipe 1" hidden />
+          <span id="team1VoteName">Équipe 1</span>
+        </button>
+        <button id="team2Button" class="team-vote-button" data-choice="team2">
+          <img id="team2VoteImage" alt="Équipe 2" hidden />
+          <span id="team2VoteName">Équipe 2</span>
+        </button>
       </div>
-
-      <p class="message" id="voteMessage">Un seul vote par appareil et par impro.</p>
     </section>
   </main>
 

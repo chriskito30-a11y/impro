@@ -3,73 +3,70 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Impro Vote · Arbitre</title>
+  <title>Arbitre · Impro Vote Live</title>
   <link rel="stylesheet" href="./style.css" />
 </head>
-<body>
-  <main class="page">
-    <section class="header">
-      <p class="eyebrow">Page arbitre</p>
-      <h1>Lancer un vote</h1>
-      <p>Modifie les équipes, choisis la durée, puis lance le vote pour le public.</p>
+<body class="app-bg">
+  <main class="page-shell admin-shell">
+    <section id="missingRoom" class="panel-card" hidden>
+      <h1>Salle introuvable</h1>
+      <p>Retourne à l'accueil pour créer ou ouvrir une salle.</p>
+      <a class="primary-link" href="./index.html">Accueil</a>
     </section>
 
-    <section class="grid">
-      <div class="card">
-        <h2>Paramètres</h2>
-
-        <div class="form-row">
-          <label for="team1Input">Choix / équipe 1</label>
-          <input id="team1Input" value="Équipe 1" autocomplete="off" />
-        </div>
-
-        <div class="form-row">
-          <label for="team2Input">Choix / équipe 2</label>
-          <input id="team2Input" value="Équipe 2" autocomplete="off" />
-        </div>
-
-        <div class="form-row">
-          <label for="durationInput">Durée du vote en secondes</label>
-          <input id="durationInput" type="number" min="5" max="300" value="30" />
-        </div>
-
-        <div class="actions">
-          <button id="startBtn">Lancer le vote</button>
-          <button id="closeBtn" class="secondary">Clore maintenant</button>
-          <button id="resetBtn" class="danger">Réinitialiser</button>
-        </div>
-
-        <p class="message" id="adminMessage">Prêt.</p>
-      </div>
-
-      <div class="card">
-        <h2>État du vote</h2>
-        <div class="status-pill"><span id="statusDot" class="dot"></span><span id="statusText">Chargement…</span></div>
-        <div class="big-timer" id="timerText">--</div>
-        <p id="summaryText" class="muted">Aucun vote en cours.</p>
-
-        <div class="results">
-          <div class="result-row">
-            <div class="team-name" id="summaryTeam1">Équipe 1</div>
-            <div class="score" id="summaryScore1">0</div>
-          </div>
-          <div class="result-row">
-            <div class="team-name" id="summaryTeam2">Équipe 2</div>
-            <div class="score" id="summaryScore2">0</div>
-          </div>
-        </div>
-      </div>
+    <section id="authPanel" class="auth-card panel-card" hidden>
+      <p class="eyebrow">Accès arbitre</p>
+      <h1>Mot de passe de la salle</h1>
+      <p class="muted">Salle : <strong id="authRoomName"></strong></p>
+      <form id="authForm" class="form-grid">
+        <label>
+          <span>Mot de passe arbitre</span>
+          <input id="authPassword" type="password" autocomplete="current-password" required />
+        </label>
+        <button class="primary-btn" type="submit">Entrer</button>
+        <p id="authError" class="status-text error"></p>
+      </form>
     </section>
 
-    <section class="card" style="margin-top:18px;">
-      <h2>Liens à utiliser</h2>
-      <div class="link-list">
-        <div><strong>Public :</strong> <span class="small-code" id="voteUrl"></span></div>
-        <div><strong>Écran :</strong> <span class="small-code" id="screenUrl"></span></div>
+    <section id="adminPanel" hidden>
+      <div class="topbar">
+        <div>
+          <p class="eyebrow">Console arbitre</p>
+          <h1 id="adminTitle">Match d'improvisation</h1>
+          <p id="adminSubtitle" class="muted">Vote du public</p>
+        </div>
+        <div class="topbar-actions">
+          <a class="ghost-link" id="settingsLink" href="#">Réglages</a>
+          <a class="ghost-link" id="screenLink" href="#" target="_blank" rel="noopener">Écran</a>
+          <a class="ghost-link" id="voteLink" href="#" target="_blank" rel="noopener">Vote</a>
+        </div>
       </div>
-      <div class="actions">
-        <a class="button-link secondary" href="./vote.html" target="_blank" rel="noopener">Ouvrir vote</a>
-        <a class="button-link secondary" href="./screen.html" target="_blank" rel="noopener">Ouvrir écran</a>
+
+      <div class="admin-grid">
+        <section class="panel-card control-card">
+          <div class="timer-orb" id="timerOrb">--</div>
+          <h2 id="voteState">Vote fermé</h2>
+          <p id="voteInfo" class="muted">Lance un vote pour la prochaine improvisation.</p>
+
+          <div class="actions-column">
+            <button id="startVoteBtn" class="primary-btn big-btn">Lancer le vote</button>
+            <button id="closeVoteBtn" class="secondary-btn">Clôturer maintenant</button>
+            <button id="resetVoteBtn" class="danger-btn">Réinitialiser les votes</button>
+          </div>
+        </section>
+
+        <section class="panel-card live-results-card">
+          <h2>Résultats en direct</h2>
+          <div class="admin-score-row">
+            <span id="team1AdminName">Équipe 1</span>
+            <strong id="team1AdminScore">0</strong>
+          </div>
+          <div class="admin-score-row">
+            <span id="team2AdminName">Équipe 2</span>
+            <strong id="team2AdminScore">0</strong>
+          </div>
+          <p id="totalVotes" class="muted">0 vote</p>
+        </section>
       </div>
     </section>
   </main>

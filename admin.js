@@ -1,171 +1,134 @@
-import { db, ref, set, update, onValue, VOTE_PATH } from "./firebase-config.js";
+import { db, ref, update, set, onValue } from "./firebase-config.js";
+import {
+  $,
+  getRoomIdFromUrl,
+  getRememberedPassword,
+  rememberPassword,
+  verifyRoomPassword,
+  roomPath,
+  safeConfig,
+  countVotes,
+  remainingSeconds,
+  isVoteOpen,
+  formatTimer,
+  publicUrl
+} from "./core.js";
 
-const team1Input = document.querySelector("#team1Input");
-const team2Input = document.querySelector("#team2Input");
-const durationInput = document.querySelector("#durationInput");
-const startBtn = document.querySelector("#startBtn");
-const closeBtn = document.querySelector("#closeBtn");
-const resetBtn = document.querySelector("#resetBtn");
-const adminMessage = document.querySelector("#adminMessage");
-const statusDot = document.querySelector("#statusDot");
-const statusText = document.querySelector("#statusText");
-const timerText = document.querySelector("#timerText");
-const summaryText = document.querySelector("#summaryText");
-const summaryTeam1 = document.querySelector("#summaryTeam1");
-const summaryTeam2 = document.querySelector("#summaryTeam2");
-const summaryScore1 = document.querySelector("#summaryScore1");
-const summaryScore2 = document.querySelector("#summaryScore2");
-const voteUrl = document.querySelector("#voteUrl");
-const screenUrl = document.querySelector("#screenUrl");
+const roomId = getRoomIdFromUrl();
+let config = safeConfig();
+let currentVote = { active: false, votes: {} };
+let timerId = null;
 
-const voteRef = ref(db, VOTE_PATH);
-let currentVote = null;
-let timer = null;
+const missingRoom = $("#missingRoom");
+const authPanel = $("#authPanel");
+const adminPanel = $("#adminPanel");
+const authForm = $("#authForm");
+const authPassword = $("#authPassword");
+const authError = $("#authError");
 
-voteUrl.textContent = new URL("./vote.html", window.location.href).href;
-screenUrl.textContent = new URL("./screen.html", window.location.href).href;
-
-function makeRoundId() {
-  if (crypto?.randomUUID) return crypto.randomUUID();
-  return `${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`;
+if (!roomId) {
+  missingRoom.hidden = false;
+} else {
+  $("#authRoomName").textContent = roomId;
+  bootAuth();
 }
 
-function clampDuration(value) {
-  const duration = Number.parseInt(value, 10);
-  if (!Number.isFinite(duration)) return 30;
-  return Math.min(300, Math.max(5, duration));
-}
-
-function countVotes(votes = {}) {
-  let team1 = 0;
-  let team2 = 0;
-
-  Object.values(votes || {}).forEach((vote) => {
-    if (vote?.choice === "team1") team1 += 1;
-    if (vote?.choice === "team2") team2 += 1;
-  });
-
-  return { team1, team2, total: team1 + team2 };
-}
-
-function getRemainingSeconds(data) {
-  if (!data?.startedAt || !data?.durationSec) return 0;
-  const endAt = data.startedAt + data.durationSec * 1000;
-  return Math.max(0, Math.ceil((endAt - Date.now()) / 1000));
-}
-
-function isOpen(data) {
-  return Boolean(data?.active) && getRemainingSeconds(data) > 0;
-}
-
-function render() {
-  const data = currentVote;
-
-  if (!data?.roundId) {
-    statusDot.classList.remove("open");
-    statusText.textContent = "Aucun vote";
-    timerText.textContent = "--";
-    summaryText.textContent = "Aucun vote en cours.";
-    summaryTeam1.textContent = team1Input.value || "Équipe 1";
-    summaryTeam2.textContent = team2Input.value || "Équipe 2";
-    summaryScore1.textContent = "0";
-    summaryScore2.textContent = "0";
-    closeBtn.disabled = true;
+async function bootAuth() {
+  const remembered = getRememberedPassword(roomId);
+  if (remembered && await verifyRoomPassword(roomId, remembered)) {
+    openAdmin();
     return;
   }
-
-  const counts = countVotes(data.votes);
-  const remaining = getRemainingSeconds(data);
-  const open = isOpen(data);
-
-  team1Input.value = data.team1 || "Équipe 1";
-  team2Input.value = data.team2 || "Équipe 2";
-  durationInput.value = data.durationSec || 30;
-
-  statusDot.classList.toggle("open", open);
-  statusText.textContent = open ? "Vote ouvert" : "Vote terminé";
-  timerText.textContent = open ? `${remaining}s` : "0s";
-  summaryText.textContent = `${counts.total} vote${counts.total > 1 ? "s" : ""} enregistré${counts.total > 1 ? "s" : ""}.`;
-  summaryTeam1.textContent = data.team1 || "Équipe 1";
-  summaryTeam2.textContent = data.team2 || "Équipe 2";
-  summaryScore1.textContent = counts.team1;
-  summaryScore2.textContent = counts.team2;
-  closeBtn.disabled = !open;
+  authPanel.hidden = false;
+  authPassword.focus();
 }
 
-onValue(voteRef, (snapshot) => {
-  currentVote = snapshot.val();
-  render();
+authForm?.addEventListener("submit", async (event) => {
+  event.preventDefault();
+  authError.textContent = "";
+  const password = authPassword.value;
+  const ok = await verifyRoomPassword(roomId, password);
+  if (!ok) {
+    authError.textContent = "Mot de passe incorrect.";
+    return;
+  }
+  rememberPassword(roomId, password);
+  openAdmin();
 });
 
-timer = setInterval(render, 250);
+function openAdmin() {
+  authPanel.hidden = true;
+  adminPanel.hidden = false;
+  $("#settingsLink").href = publicUrl("settings.html", roomId);
+  $("#screenLink").href = publicUrl("screen.html", roomId);
+  $("#voteLink").href = publicUrl("vote.html", roomId);
 
-startBtn.addEventListener("click", async () => {
-  const team1 = team1Input.value.trim() || "Équipe 1";
-  const team2 = team2Input.value.trim() || "Équipe 2";
-  const durationSec = clampDuration(durationInput.value);
+  onValue(ref(db, roomPath(roomId, "config")), (snap) => {
+    config = safeConfig(snap.val() || {});
+    render();
+  });
+
+  onValue(ref(db, roomPath(roomId, "currentVote")), (snap) => {
+    currentVote = snap.val() || { active: false, votes: {} };
+    render();
+  });
+
+  timerId = setInterval(render, 300);
+}
+
+$("#startVoteBtn")?.addEventListener("click", async () => {
   const now = Date.now();
-
-  startBtn.disabled = true;
-  adminMessage.textContent = "Lancement du vote…";
-
-  try {
-    await set(voteRef, {
-      roundId: makeRoundId(),
-      active: true,
-      status: "open",
-      team1,
-      team2,
-      durationSec,
-      startedAt: now,
-      endedAt: now + durationSec * 1000,
-      votes: {}
-    });
-    adminMessage.textContent = `Vote lancé pour ${durationSec} secondes.`;
-  } catch (error) {
-    console.error(error);
-    adminMessage.textContent = "Erreur : impossible de lancer le vote. Vérifie les règles Firebase.";
-  } finally {
-    startBtn.disabled = false;
-  }
+  const roundId = String(now);
+  await set(ref(db, roomPath(roomId, "currentVote")), {
+    active: true,
+    roundId,
+    startedAt: now,
+    durationSec: config.durationSec,
+    votes: {}
+  });
 });
 
-closeBtn.addEventListener("click", async () => {
-  adminMessage.textContent = "Clôture du vote…";
-
-  try {
-    await update(voteRef, {
-      active: false,
-      status: "closed",
-      endedAt: Date.now()
-    });
-    adminMessage.textContent = "Vote clôturé.";
-  } catch (error) {
-    console.error(error);
-    adminMessage.textContent = "Erreur : impossible de clôturer le vote.";
-  }
+$("#closeVoteBtn")?.addEventListener("click", async () => {
+  await update(ref(db, roomPath(roomId, "currentVote")), { active: false });
 });
 
-resetBtn.addEventListener("click", async () => {
-  adminMessage.textContent = "Réinitialisation…";
-
-  try {
-    await set(voteRef, {
-      roundId: null,
-      active: false,
-      status: "idle",
-      team1: team1Input.value.trim() || "Équipe 1",
-      team2: team2Input.value.trim() || "Équipe 2",
-      durationSec: clampDuration(durationInput.value),
-      startedAt: null,
-      endedAt: null,
-      votes: {}
-    });
-    adminMessage.textContent = "Réinitialisé. Tu peux lancer une nouvelle impro.";
-  } catch (error) {
-    console.error(error);
-    adminMessage.textContent = "Erreur : impossible de réinitialiser.";
-  }
+$("#resetVoteBtn")?.addEventListener("click", async () => {
+  await set(ref(db, roomPath(roomId, "currentVote")), {
+    active: false,
+    roundId: "",
+    startedAt: 0,
+    durationSec: config.durationSec,
+    votes: {}
+  });
 });
 
-window.addEventListener("beforeunload", () => clearInterval(timer));
+function render() {
+  const counts = countVotes(currentVote);
+  const remaining = remainingSeconds(currentVote);
+  const open = isVoteOpen(currentVote);
+  const expired = currentVote?.active && remaining <= 0;
+
+  $("#adminTitle").textContent = config.title;
+  $("#adminSubtitle").textContent = `${config.subtitle} · ${config.durationSec}s`;
+  $("#team1AdminName").textContent = config.team1Name;
+  $("#team2AdminName").textContent = config.team2Name;
+  $("#team1AdminScore").textContent = counts.team1;
+  $("#team2AdminScore").textContent = counts.team2;
+  $("#totalVotes").textContent = `${counts.total} vote${counts.total > 1 ? "s" : ""}`;
+  $("#timerOrb").textContent = open || expired ? formatTimer(remaining) : "--";
+
+  if (open) {
+    $("#voteState").textContent = "Vote en cours";
+    $("#voteInfo").textContent = "Le public peut voter maintenant.";
+  } else if (expired) {
+    $("#voteState").textContent = "Temps écoulé";
+    $("#voteInfo").textContent = "Le vote est terminé côté public. Tu peux clôturer ou relancer.";
+  } else {
+    $("#voteState").textContent = "Vote fermé";
+    $("#voteInfo").textContent = "Lance un vote pour la prochaine improvisation.";
+  }
+}
+
+window.addEventListener("beforeunload", () => {
+  if (timerId) clearInterval(timerId);
+});

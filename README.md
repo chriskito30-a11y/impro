@@ -1,33 +1,32 @@
-# Impro Vote
+# Impro Vote Live — V2 modulable
 
-Mini site statique pour vote de public en théâtre d'improvisation.
+Mini-site statique pour vote de public en match d'improvisation.
 
 ## Pages
 
-- `index.html` : accueil avec les liens
-- `admin.html` : page arbitre pour lancer, clore et réinitialiser le vote
-- `vote.html` : page public à partager par lien ou QR code
-- `screen.html` : écran de résultats dynamique
+- `index.html` : créer ou ouvrir une salle
+- `settings.html?room=...` : régler le spectacle, les équipes, les images et la durée
+- `admin.html?room=...` : lancer, clôturer ou réinitialiser un vote
+- `vote.html?room=...` : lien public pour les spectateurs
+- `screen.html?room=...` : affichage dynamique pour vidéoprojecteur
 
 ## Déploiement GitHub Pages
 
-1. Crée un dépôt GitHub.
-2. Envoie tous les fichiers à la racine du dépôt.
-3. Va dans `Settings` > `Pages`.
-4. Source : `Deploy from a branch`.
-5. Branche : `main`, dossier `/root`.
-6. Ouvre l'URL GitHub Pages.
+1. Dézipper le dossier.
+2. Mettre tous les fichiers à la racine du dépôt GitHub.
+3. Activer GitHub Pages : `Settings > Pages > Deploy from branch`.
+4. Ouvrir `index.html` sur l'URL GitHub Pages.
 
 ## Firebase
 
-Le fichier `firebase-config.js` contient déjà la configuration Web Firebase du projet `impro-ead69`.
+La configuration Firebase est déjà intégrée dans `firebase-config.js`.
 
-Dans Firebase Console > Realtime Database > Rules, utilise au minimum pour les tests :
+Dans Realtime Database > Rules, utiliser pour la V1 de test :
 
 ```json
 {
   "rules": {
-    "improVote": {
+    "rooms": {
       ".read": true,
       ".write": true
     }
@@ -35,17 +34,26 @@ Dans Firebase Console > Realtime Database > Rules, utilise au minimum pour les t
 }
 ```
 
-## Utilisation
+Attention : ces règles sont ouvertes pour simplifier les tests. Le mot de passe protège l'interface côté site, mais ce n'est pas une sécurité forte contre quelqu'un qui manipule directement Firebase. Pour une version publique sérieuse, il faudra ajouter Firebase Authentication et des règles plus strictes.
 
-1. Ouvre `admin.html` sur l'appareil de l'arbitre.
-2. Ouvre `screen.html` sur l'ordinateur relié au vidéoprojecteur.
-3. Partage `vote.html` au public, par exemple via QR code.
-4. Dans `admin.html`, modifie les deux équipes et la durée, puis clique sur `Lancer le vote`.
+## Images
 
-Chaque appareil peut voter une seule fois par improvisation. Le vote est mémorisé dans le navigateur avec `localStorage`.
+Les images ne sont pas stockées dans Firebase. Le site stocke uniquement leur URL.
 
-## Note sécurité
+Recommandations :
 
-Cette V1 est volontairement très simple, sans compte et sans mot de passe. Les règles ouvertes sont pratiques pour tester, mais elles permettent techniquement à quelqu'un qui connaît la base d'écrire dans `/improVote`.
+- Image principale : format 16:9, idéalement 1920 × 1080 px.
+- Image équipe 1 / équipe 2 : format carré, idéalement 1000 × 1000 px ou plus.
+- Si une image est vide ou invalide, le site continue de fonctionner sans image.
+- Les coins arrondis sont appliqués automatiquement.
 
-Pour un usage public plus sécurisé, il faudra ajouter une petite protection côté arbitre, par exemple un code admin ou Firebase Auth.
+Tu peux utiliser un hébergeur d'image externe, puis coller le lien direct dans `settings.html`.
+
+## Fonctionnement du vote
+
+- Une salle correspond à un événement ou un spectacle.
+- Chaque salle a son mot de passe arbitre.
+- Les liens de vote et d'écran sont publics.
+- L'arbitre lance un vote pour une durée définie.
+- Chaque appareil peut voter une seule fois par manche.
+- L'écran affiche les résultats en direct avec animation `+1`.

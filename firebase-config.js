@@ -1,4 +1,4 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-app.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
 import {
   getDatabase,
   ref,
@@ -6,8 +6,8 @@ import {
   update,
   onValue,
   get,
-  child
-} from "https://www.gstatic.com/firebasejs/12.14.0/firebase-database.js";
+  remove
+} from "https://www.gstatic.com/firebasejs/10.12.5/firebase-database.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyBRXQ1tLE-zyYWgEwF_HM21EM-ToAIZ1QM",
@@ -29,7 +29,5 @@ export {
   update,
   onValue,
   get,
-  child
+  remove
 };
-
-export const VOTE_PATH = "improVote/current";

@@ -1,6 +1,6 @@
 {
   "rules": {
-    "improVote": {
+    "rooms": {
       ".read": true,
       ".write": true
     }

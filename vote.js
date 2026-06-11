@@ -1,131 +1,105 @@
-import { db, ref, set, onValue, VOTE_PATH } from "./firebase-config.js";
+import { db, ref, set, onValue } from "./firebase-config.js";
+import {
+  $,
+  getRoomIdFromUrl,
+  roomPath,
+  safeConfig,
+  remainingSeconds,
+  isVoteOpen,
+  formatTimer,
+  getDeviceId,
+  getVotedRound,
+  setVotedRound,
+  setOptionalImage
+} from "./core.js";
 
-const voteSubtitle = document.querySelector("#voteSubtitle");
-const statusDot = document.querySelector("#statusDot");
-const statusText = document.querySelector("#statusText");
-const timerText = document.querySelector("#timerText");
-const instructionText = document.querySelector("#instructionText");
-const voteTeam1 = document.querySelector("#voteTeam1");
-const voteTeam2 = document.querySelector("#voteTeam2");
-const voteMessage = document.querySelector("#voteMessage");
+const roomId = getRoomIdFromUrl();
+let config = safeConfig();
+let currentVote = { active: false, roundId: "", votes: {} };
+let tick = null;
 
-const DEVICE_ID_KEY = "improVoteDeviceId";
-const VOTED_ROUND_KEY = "improVoteVotedRoundId";
-const VOTED_CHOICE_KEY = "improVoteVotedChoice";
-
-const voteRef = ref(db, VOTE_PATH);
-let currentVote = null;
-let timer = null;
-let isSubmitting = false;
-
-function makeDeviceId() {
-  if (crypto?.randomUUID) return crypto.randomUUID();
-  return `${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`;
+if (!roomId) {
+  $("#missingRoom").hidden = false;
+} else {
+  $("#votePanel").hidden = false;
+  bind();
 }
 
-function getDeviceId() {
-  let id = localStorage.getItem(DEVICE_ID_KEY);
-  if (!id) {
-    id = makeDeviceId();
-    localStorage.setItem(DEVICE_ID_KEY, id);
-  }
-  return id;
+function bind() {
+  onValue(ref(db, roomPath(roomId, "config")), (snap) => {
+    config = safeConfig(snap.val() || {});
+    render();
+  });
+
+  onValue(ref(db, roomPath(roomId, "currentVote")), (snap) => {
+    currentVote = snap.val() || { active: false, roundId: "", votes: {} };
+    render();
+  });
+
+  $("#team1Button").addEventListener("click", () => vote("team1"));
+  $("#team2Button").addEventListener("click", () => vote("team2"));
+
+  tick = setInterval(render, 250);
 }
 
-function getRemainingSeconds(data) {
-  if (!data?.startedAt || !data?.durationSec) return 0;
-  const endAt = data.startedAt + data.durationSec * 1000;
-  return Math.max(0, Math.ceil((endAt - Date.now()) / 1000));
-}
+async function vote(choice) {
+  if (!isVoteOpen(currentVote)) return;
 
-function isOpen(data) {
-  return Boolean(data?.active) && getRemainingSeconds(data) > 0;
-}
-
-function hasAlreadyVoted(data) {
-  return Boolean(data?.roundId) && localStorage.getItem(VOTED_ROUND_KEY) === data.roundId;
-}
-
-function render() {
-  const data = currentVote;
-
-  if (!data?.roundId) {
-    statusDot.classList.remove("open");
-    statusText.textContent = "En attente";
-    timerText.textContent = "--";
-    voteSubtitle.textContent = "Attente du lancement par l’arbitre.";
-    instructionText.textContent = "Le vote apparaîtra ici dès qu’il sera lancé.";
-    voteTeam1.textContent = "Équipe 1";
-    voteTeam2.textContent = "Équipe 2";
-    voteTeam1.disabled = true;
-    voteTeam2.disabled = true;
-    voteMessage.textContent = "Un seul vote par appareil et par impro.";
+  const voted = getVotedRound(roomId);
+  if (voted?.roundId === currentVote.roundId) {
+    render();
     return;
   }
 
-  const remaining = getRemainingSeconds(data);
-  const open = isOpen(data);
-  const alreadyVoted = hasAlreadyVoted(data);
-  const votedChoice = localStorage.getItem(VOTED_CHOICE_KEY);
-
-  statusDot.classList.toggle("open", open);
-  statusText.textContent = open ? "Vote ouvert" : "Vote terminé";
-  timerText.textContent = open ? `${remaining}s` : "0s";
-  voteTeam1.textContent = data.team1 || "Équipe 1";
-  voteTeam2.textContent = data.team2 || "Équipe 2";
-
-  voteTeam1.disabled = !open || alreadyVoted || isSubmitting;
-  voteTeam2.disabled = !open || alreadyVoted || isSubmitting;
-
-  if (open && !alreadyVoted) {
-    voteSubtitle.textContent = "Choisis l’équipe gagnante de l’improvisation.";
-    instructionText.textContent = "Appuie sur un seul bouton. Ton vote sera enregistré immédiatement.";
-    voteMessage.textContent = "Vote ouvert. Un seul vote est possible sur cet appareil.";
-  } else if (alreadyVoted) {
-    const teamName = votedChoice === "team2" ? data.team2 : data.team1;
-    voteSubtitle.textContent = "Merci, ton vote est enregistré.";
-    instructionText.textContent = "Tu as déjà voté pour cette impro.";
-    voteMessage.textContent = `Vote enregistré : ${teamName || "équipe choisie"}.`;
-  } else {
-    voteSubtitle.textContent = "Le vote est terminé.";
-    instructionText.textContent = "Attends la prochaine improvisation.";
-    voteMessage.textContent = "Le vote n’est plus ouvert.";
-  }
-}
-
-async function submitVote(choice) {
-  const data = currentVote;
-  if (!data?.roundId || !isOpen(data) || hasAlreadyVoted(data) || isSubmitting) return;
-
   const deviceId = getDeviceId();
-  isSubmitting = true;
+  await set(ref(db, roomPath(roomId, `currentVote/votes/${deviceId}`)), {
+    choice,
+    at: Date.now()
+  });
+  setVotedRound(roomId, currentVote.roundId, choice);
   render();
+}
 
-  try {
-    await set(ref(db, `${VOTE_PATH}/votes/${deviceId}`), {
-      choice,
-      at: Date.now()
-    });
+function render() {
+  const remaining = remainingSeconds(currentVote);
+  const open = isVoteOpen(currentVote);
+  const voted = getVotedRound(roomId);
+  const alreadyVoted = voted?.roundId && voted.roundId === currentVote?.roundId;
 
-    localStorage.setItem(VOTED_ROUND_KEY, data.roundId);
-    localStorage.setItem(VOTED_CHOICE_KEY, choice);
-    voteMessage.textContent = "Merci, ton vote est enregistré !";
-  } catch (error) {
-    console.error(error);
-    voteMessage.textContent = "Erreur : vote non enregistré. Vérifie la connexion ou les règles Firebase.";
-  } finally {
-    isSubmitting = false;
-    render();
+  $("#voteTitle").textContent = config.title;
+  $("#voteSubtitle").textContent = config.subtitle;
+  $("#team1VoteName").textContent = config.team1Name;
+  $("#team2VoteName").textContent = config.team2Name;
+
+  setOptionalImage($("#voteMainImage"), config.mainImage, config.title);
+  setOptionalImage($("#team1VoteImage"), config.team1Image, config.team1Name);
+  setOptionalImage($("#team2VoteImage"), config.team2Image, config.team2Name);
+
+  $("#team1Button").disabled = !open || alreadyVoted;
+  $("#team2Button").disabled = !open || alreadyVoted;
+
+  if (alreadyVoted) {
+    const team = voted.choice === "team1" ? config.team1Name : config.team2Name;
+    $("#voteTimer").textContent = open ? formatTimer(remaining) : "Terminé";
+    $("#voteMessage").textContent = `Vote enregistré pour ${team}. Merci !`;
+    document.body.classList.add("has-voted");
+    return;
+  }
+
+  document.body.classList.remove("has-voted");
+
+  if (open) {
+    $("#voteTimer").textContent = formatTimer(remaining);
+    $("#voteMessage").textContent = "Choisis l'équipe qui remporte l'impro.";
+  } else if (currentVote?.active && remaining <= 0) {
+    $("#voteTimer").textContent = "Terminé";
+    $("#voteMessage").textContent = "Le temps de vote est terminé.";
+  } else {
+    $("#voteTimer").textContent = "En attente";
+    $("#voteMessage").textContent = "Attends que l'arbitre lance le vote.";
   }
 }
 
-voteTeam1.addEventListener("click", () => submitVote("team1"));
-voteTeam2.addEventListener("click", () => submitVote("team2"));
-
-onValue(voteRef, (snapshot) => {
-  currentVote = snapshot.val();
-  render();
+window.addEventListener("beforeunload", () => {
+  if (tick) clearInterval(tick);
 });
-
-timer = setInterval(render, 250);
-window.addEventListener("beforeunload", () => clearInterval(timer));
