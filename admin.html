@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Impro Vote · Arbitre</title>
+  <link rel="stylesheet" href="./style.css" />
+</head>
+<body>
+  <main class="page">
+    <section class="header">
+      <p class="eyebrow">Page arbitre</p>
+      <h1>Lancer un vote</h1>
+      <p>Modifie les équipes, choisis la durée, puis lance le vote pour le public.</p>
+    </section>
+
+    <section class="grid">
+      <div class="card">
+        <h2>Paramètres</h2>
+
+        <div class="form-row">
+          <label for="team1Input">Choix / équipe 1</label>
+          <input id="team1Input" value="Équipe 1" autocomplete="off" />
+        </div>
+
+        <div class="form-row">
+          <label for="team2Input">Choix / équipe 2</label>
+          <input id="team2Input" value="Équipe 2" autocomplete="off" />
+        </div>
+
+        <div class="form-row">
+          <label for="durationInput">Durée du vote en secondes</label>
+          <input id="durationInput" type="number" min="5" max="300" value="30" />
+        </div>
+
+        <div class="actions">
+          <button id="startBtn">Lancer le vote</button>
+          <button id="closeBtn" class="secondary">Clore maintenant</button>
+          <button id="resetBtn" class="danger">Réinitialiser</button>
+        </div>
+
+        <p class="message" id="adminMessage">Prêt.</p>
+      </div>
+
+      <div class="card">
+        <h2>État du vote</h2>
+        <div class="status-pill"><span id="statusDot" class="dot"></span><span id="statusText">Chargement…</span></div>
+        <div class="big-timer" id="timerText">--</div>
+        <p id="summaryText" class="muted">Aucun vote en cours.</p>
+
+        <div class="results">
+          <div class="result-row">
+            <div class="team-name" id="summaryTeam1">Équipe 1</div>
+            <div class="score" id="summaryScore1">0</div>
+          </div>
+          <div class="result-row">
+            <div class="team-name" id="summaryTeam2">Équipe 2</div>
+            <div class="score" id="summaryScore2">0</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="card" style="margin-top:18px;">
+      <h2>Liens à utiliser</h2>
+      <div class="link-list">
+        <div><strong>Public :</strong> <span class="small-code" id="voteUrl"></span></div>
+        <div><strong>Écran :</strong> <span class="small-code" id="screenUrl"></span></div>
+      </div>
+      <div class="actions">
+        <a class="button-link secondary" href="./vote.html" target="_blank" rel="noopener">Ouvrir vote</a>
+        <a class="button-link secondary" href="./screen.html" target="_blank" rel="noopener">Ouvrir écran</a>
+      </div>
+    </section>
+  </main>
+
+  <script type="module" src="./admin.js"></script>
+</body>
+</html>

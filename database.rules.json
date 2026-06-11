@@ -1,0 +1,8 @@
+{
+  "rules": {
+    "improVote": {
+      ".read": true,
+      ".write": true
+    }
+  }
+}
