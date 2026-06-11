@@ -47,6 +47,11 @@ export function publicUrl(page, roomId) {
   return url.href;
 }
 
+export function qrCodeUrl(url, size = 220) {
+  const cleanSize = Math.min(500, Math.max(120, Number.parseInt(size, 10) || 220));
+  return `https://api.qrserver.com/v1/create-qr-code/?size=${cleanSize}x${cleanSize}&margin=12&data=${encodeURIComponent(url)}`;
+}
+
 export function randomRoomId() {
   const words = ["impro", "match", "show", "scene", "finale", "public", "duel", "cabaret"];
   const word = words[Math.floor(Math.random() * words.length)];

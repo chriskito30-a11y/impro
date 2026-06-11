@@ -435,6 +435,89 @@ button:disabled {
   border: 1px solid var(--line);
 }
 
+.share-grid {
+  display: grid;
+  gap: 14px;
+}
+
+.share-card {
+  display: grid;
+  gap: 12px;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 22px;
+  background:
+    radial-gradient(circle at 0% 0%, rgba(255, 209, 102, .13), transparent 34%),
+    rgba(255,255,255,.055);
+}
+
+.share-card-head {
+  display: grid;
+  gap: 4px;
+}
+
+.share-card-head strong {
+  color: var(--gold);
+  font-size: 1.02rem;
+}
+
+.share-card-head span {
+  color: var(--muted);
+  font-size: .92rem;
+  line-height: 1.35;
+}
+
+.share-open {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  width: fit-content;
+  min-height: 42px;
+  padding: 10px 14px;
+  border-radius: 999px;
+  color: #170b23;
+  font-weight: 1000;
+  text-decoration: none;
+  background: linear-gradient(135deg, var(--gold), var(--orange));
+  box-shadow: 0 12px 32px rgba(255, 122, 61, .20);
+}
+
+.share-url {
+  font-size: .84rem;
+  padding: 11px 12px;
+  border-radius: 14px;
+  color: rgba(255,255,255,.84);
+}
+
+.share-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.share-actions button {
+  padding: 10px 14px;
+  background: rgba(255,255,255,.10);
+  border: 1px solid var(--line);
+}
+
+.qr-link {
+  display: grid;
+  place-items: center;
+  padding: 12px;
+  border-radius: 20px;
+  background: rgba(255,255,255,.94);
+  border: 1px solid rgba(255,255,255,.72);
+  text-decoration: none;
+}
+
+.qr-code {
+  display: block;
+  width: min(100%, 210px);
+  aspect-ratio: 1;
+  border-radius: 16px;
+}
+
 .admin-grid {
   display: grid;
   grid-template-columns: minmax(280px, .75fr) minmax(0, 1fr);

@@ -119,12 +119,70 @@
           </section>
 
           <section class="panel-card links-card">
-            <h2>Liens de la salle</h2>
-            <p class="muted">À partager ou afficher en QR code avec ton outil préféré.</p>
-            <div class="link-row"><span>Vote public</span><input id="voteLink" readonly /><button data-copy="voteLink">Copier</button></div>
-            <div class="link-row"><span>Écran</span><input id="screenLink" readonly /><button data-copy="screenLink">Copier</button></div>
-            <div class="link-row"><span>Arbitre</span><input id="adminLink" readonly /><button data-copy="adminLink">Copier</button></div>
-            <div class="link-row"><span>Réglages</span><input id="settingsLink" readonly /><button data-copy="settingsLink">Copier</button></div>
+            <h2>Liens & QR codes</h2>
+            <p class="muted">Clique pour ouvrir, copie le lien, ou affiche le QR code au public.</p>
+
+            <div class="share-grid">
+              <article class="share-card">
+                <div class="share-card-head">
+                  <strong>Vote public</strong>
+                  <span>À partager aux spectateurs</span>
+                </div>
+                <a id="voteOpenLink" class="share-open" href="#" target="_blank" rel="noopener">Ouvrir le vote</a>
+                <input id="voteLink" class="share-url" readonly />
+                <div class="share-actions">
+                  <button type="button" data-copy="voteLink">Copier</button>
+                </div>
+                <a id="voteQrLink" class="qr-link" href="#" target="_blank" rel="noopener" aria-label="Ouvrir le lien de vote public">
+                  <img id="voteQr" class="qr-code" alt="QR code du vote public" loading="lazy" />
+                </a>
+              </article>
+
+              <article class="share-card">
+                <div class="share-card-head">
+                  <strong>Écran résultats</strong>
+                  <span>Pour ordinateur / vidéoprojecteur</span>
+                </div>
+                <a id="screenOpenLink" class="share-open" href="#" target="_blank" rel="noopener">Ouvrir l'écran</a>
+                <input id="screenLink" class="share-url" readonly />
+                <div class="share-actions">
+                  <button type="button" data-copy="screenLink">Copier</button>
+                </div>
+                <a id="screenQrLink" class="qr-link" href="#" target="_blank" rel="noopener" aria-label="Ouvrir le lien écran">
+                  <img id="screenQr" class="qr-code" alt="QR code de l'écran résultats" loading="lazy" />
+                </a>
+              </article>
+
+              <article class="share-card">
+                <div class="share-card-head">
+                  <strong>Arbitre</strong>
+                  <span>Protégé par mot de passe</span>
+                </div>
+                <a id="adminOpenLink" class="share-open" href="#" target="_blank" rel="noopener">Ouvrir l'arbitre</a>
+                <input id="adminLinkInput" class="share-url" readonly />
+                <div class="share-actions">
+                  <button type="button" data-copy="adminLinkInput">Copier</button>
+                </div>
+                <a id="adminQrLink" class="qr-link" href="#" target="_blank" rel="noopener" aria-label="Ouvrir le lien arbitre">
+                  <img id="adminQr" class="qr-code" alt="QR code arbitre" loading="lazy" />
+                </a>
+              </article>
+
+              <article class="share-card">
+                <div class="share-card-head">
+                  <strong>Réglages</strong>
+                  <span>Protégé par mot de passe</span>
+                </div>
+                <a id="settingsOpenLink" class="share-open" href="#" target="_blank" rel="noopener">Ouvrir les réglages</a>
+                <input id="settingsLinkInput" class="share-url" readonly />
+                <div class="share-actions">
+                  <button type="button" data-copy="settingsLinkInput">Copier</button>
+                </div>
+                <a id="settingsQrLink" class="qr-link" href="#" target="_blank" rel="noopener" aria-label="Ouvrir le lien réglages">
+                  <img id="settingsQr" class="qr-code" alt="QR code réglages" loading="lazy" />
+                </a>
+              </article>
+            </div>
           </section>
         </aside>
       </div>

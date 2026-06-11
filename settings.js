@@ -11,6 +11,7 @@ import {
   clampDuration,
   setOptionalImage,
   publicUrl,
+  qrCodeUrl,
   copyToClipboard
 } from "./core.js";
 
@@ -94,14 +95,46 @@ async function loadConfig() {
 
 function fillLinks() {
   const links = {
-    voteLink: publicUrl("vote.html", roomId),
-    screenLink: publicUrl("screen.html", roomId),
-    adminLink: publicUrl("admin.html", roomId),
-    settingsLink: publicUrl("settings.html", roomId)
+    vote: {
+      url: publicUrl("vote.html", roomId),
+      input: "voteLink",
+      open: "voteOpenLink",
+      qr: "voteQr",
+      qrLink: "voteQrLink"
+    },
+    screen: {
+      url: publicUrl("screen.html", roomId),
+      input: "screenLink",
+      open: "screenOpenLink",
+      qr: "screenQr",
+      qrLink: "screenQrLink"
+    },
+    admin: {
+      url: publicUrl("admin.html", roomId),
+      input: "adminLinkInput",
+      open: "adminOpenLink",
+      qr: "adminQr",
+      qrLink: "adminQrLink"
+    },
+    settings: {
+      url: publicUrl("settings.html", roomId),
+      input: "settingsLinkInput",
+      open: "settingsOpenLink",
+      qr: "settingsQr",
+      qrLink: "settingsQrLink"
+    }
   };
-  Object.entries(links).forEach(([id, url]) => {
-    const input = $(`#${id}`);
-    if (input) input.value = url;
+
+  Object.values(links).forEach((item) => {
+    const input = $(`#${item.input}`);
+    const open = $(`#${item.open}`);
+    const qr = $(`#${item.qr}`);
+    const qrLink = $(`#${item.qrLink}`);
+
+    if (input) input.value = item.url;
+    if (open) open.href = item.url;
+    if (qrLink) qrLink.href = item.url;
+    if (qr) qr.src = qrCodeUrl(item.url, 240);
   });
 }
 
