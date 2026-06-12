@@ -1,4 +1,4 @@
-const CACHE_NAME = "improvote-pwa-v1";
+const CACHE_NAME = "improvote-pwa-v2-footer-cgu";
 const APP_SHELL = [
   "./",
   "./index.html",
@@ -7,6 +7,7 @@ const APP_SHELL = [
   "./vote.html",
   "./screen.html",
   "./offline.html",
+  "./cgu.html",
   "./style.css",
   "./firebase-config.js",
   "./core.js",

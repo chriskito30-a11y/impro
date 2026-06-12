@@ -1010,3 +1010,112 @@ button:disabled {
     padding-bottom: max(10px, env(safe-area-inset-bottom));
   }
 }
+
+
+/* Footer crédits + CGU */
+.app-credit {
+  position: relative;
+  z-index: 20;
+  width: min(1180px, calc(100vw - 32px));
+  margin: 0 auto;
+  padding: 0 0 clamp(18px, 3vw, 34px);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 8px 12px;
+  text-align: center;
+  color: rgba(255, 247, 237, .70);
+  font-size: clamp(.78rem, 1.2vw, .95rem);
+  line-height: 1.45;
+}
+
+.app-credit a {
+  color: var(--gold);
+  font-weight: 900;
+  text-decoration: none;
+  border-bottom: 1px solid rgba(255, 209, 102, .42);
+}
+
+.app-credit a:hover {
+  color: #fff;
+  border-bottom-color: rgba(255, 255, 255, .7);
+}
+
+.credit-separator {
+  color: rgba(255, 255, 255, .35);
+}
+
+.legal-shell {
+  min-height: auto;
+  padding-top: clamp(22px, 4vw, 54px);
+  padding-bottom: 22px;
+}
+
+.legal-card h1 {
+  max-width: 900px;
+}
+
+.legal-content {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  gap: 12px;
+  margin-top: 28px;
+  color: rgba(255, 247, 237, .84);
+  line-height: 1.65;
+  max-width: 930px;
+}
+
+.legal-content h2 {
+  margin: 18px 0 0;
+  color: #fff;
+}
+
+.legal-content p {
+  margin: 0;
+}
+
+.legal-content a {
+  color: var(--gold);
+  font-weight: 900;
+}
+
+.legal-actions {
+  position: relative;
+  z-index: 1;
+  margin-top: 30px;
+}
+
+.screen-bg .app-credit {
+  position: fixed;
+  left: clamp(8px, 1.4vw, 18px);
+  right: clamp(8px, 1.4vw, 18px);
+  bottom: clamp(4px, .8vh, 10px);
+  width: auto;
+  margin: 0;
+  padding: 6px 12px;
+  border: 1px solid rgba(255, 255, 255, .10);
+  border-radius: 999px;
+  background: rgba(8, 5, 13, .48);
+  backdrop-filter: blur(16px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, .22);
+  font-size: clamp(.62rem, .92vw, .82rem);
+  opacity: .78;
+}
+
+@media (max-width: 620px) {
+  .app-credit {
+    padding-bottom: 18px;
+  }
+
+  .credit-separator {
+    display: none;
+  }
+
+  .screen-bg .app-credit {
+    font-size: .62rem;
+    padding: 5px 8px;
+    gap: 6px;
+  }
+}
