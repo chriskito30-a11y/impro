@@ -1,0 +1,49 @@
+{
+  "name": "ImproVote",
+  "short_name": "ImproVote",
+  "description": "Vote du public en direct pour match ou spectacle d'improvisation.",
+  "lang": "fr",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#0c0712",
+  "theme_color": "#ff7a3d",
+  "categories": [
+    "entertainment",
+    "utilities"
+  ],
+  "icons": [
+    {
+      "src": "./icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "./icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "./icons/maskable-icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Créer une salle",
+      "short_name": "Créer",
+      "description": "Créer ou ouvrir une salle de vote",
+      "url": "./index.html",
+      "icons": [
+        {
+          "src": "./icons/icon-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    }
+  ]
+}

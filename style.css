@@ -990,3 +990,23 @@ button:disabled {
     font-size: clamp(2rem, 5vw, 5rem);
   }
 }
+
+
+.install-pwa-btn {
+  border-color: rgba(255, 209, 102, .45);
+  background: rgba(255, 209, 102, .12);
+}
+
+@supports (padding: max(0px)) {
+  .page-shell,
+  .vote-shell,
+  .screen-stage {
+    padding-left: max(16px, env(safe-area-inset-left));
+    padding-right: max(16px, env(safe-area-inset-right));
+  }
+
+  .screen-stage {
+    padding-top: max(10px, env(safe-area-inset-top));
+    padding-bottom: max(10px, env(safe-area-inset-bottom));
+  }
+}
