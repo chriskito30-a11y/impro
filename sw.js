@@ -1,4 +1,4 @@
-const CACHE_NAME = "improvote-pwa-v2-footer-cgu";
+const CACHE_NAME = "improvote-pwa-v2-footer-cgu-modulys-auth";
 const APP_SHELL = [
   "./",
   "./index.html",
@@ -10,6 +10,7 @@ const APP_SHELL = [
   "./cgu.html",
   "./style.css",
   "./firebase-config.js",
+  "./modulys-access.js",
   "./core.js",
   "./index.js",
   "./settings.js",

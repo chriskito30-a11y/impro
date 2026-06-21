@@ -1,3 +1,4 @@
+import { enforceModuleAccess } from "./modulys-access.js";
 import { $, normalizeRoomId, randomRoomId, ensureRoom, verifyRoomPassword, rememberPassword, publicUrl } from "./core.js";
 
 const roomInput = $("#roomInput");
@@ -5,6 +6,7 @@ const passwordInput = $("#passwordInput");
 const form = $("#roomForm");
 const randomBtn = $("#randomRoomBtn");
 const status = $("#status");
+const moduleAccessReady = enforceModuleAccess("improvote", { mode: "soft" });
 
 roomInput.value = randomRoomId();
 
@@ -24,6 +26,9 @@ form.addEventListener("submit", async (event) => {
   try {
     if (!roomId) throw new Error("Choisis un nom de salle valide.");
     if (!password || password.length < 4) throw new Error("Le mot de passe doit contenir au moins 4 caractères.");
+
+    const hasAccess = await moduleAccessReady;
+    if (!hasAccess) throw new Error("Accès Modulys indisponible pour ce module.");
 
     const result = await ensureRoom(roomId, password);
 
