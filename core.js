@@ -83,7 +83,7 @@ export async function hashRoomPassword(roomId, password, salt) {
   return sha256(`${normalizeRoomId(roomId)}|${salt}|${password}`);
 }
 
-export async function ensureRoom(roomId, password) {
+export async function ensureRoom(roomId, password, options = {}) {
   const clean = normalizeRoomId(roomId);
   if (!clean) throw new Error("Nom de salle invalide.");
   if (!password || password.length < 4) throw new Error("Choisis un mot de passe d'au moins 4 caractères.");
@@ -98,10 +98,13 @@ export async function ensureRoom(roomId, password) {
   const salt = makeSalt();
   const passwordHash = await hashRoomPassword(clean, password, salt);
   const now = Date.now();
+  const moduleMeta = typeof options.getCreateMeta === "function" ? await options.getCreateMeta(clean) : {};
 
   await set(roomRef, {
+    ...moduleMeta,
     config: {
       ...DEFAULT_CONFIG,
+      participantsLimit: Number(moduleMeta?.limits?.participantsPerEvent ?? 30),
       updatedAt: now
     },
     currentVote: {

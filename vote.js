@@ -44,9 +44,15 @@ function bind() {
 
 async function vote(choice) {
   if (!isVoteOpen(currentVote)) return;
+  const participantLimit = Number(config.participantsLimit ?? 30);
+  const votesCount = Object.keys(currentVote?.votes || {}).length;
 
   const voted = getVotedRound(roomId);
   if (voted?.roundId === currentVote.roundId) {
+    render();
+    return;
+  }
+  if (participantLimit > 0 && votesCount >= participantLimit) {
     render();
     return;
   }
@@ -65,6 +71,8 @@ function render() {
   const open = isVoteOpen(currentVote);
   const voted = getVotedRound(roomId);
   const alreadyVoted = voted?.roundId && voted.roundId === currentVote?.roundId;
+  const participantLimit = Number(config.participantsLimit ?? 30);
+  const limitReached = participantLimit > 0 && Object.keys(currentVote?.votes || {}).length >= participantLimit && !alreadyVoted;
 
   $("#voteTitle").textContent = config.title;
   $("#voteSubtitle").textContent = config.subtitle;
