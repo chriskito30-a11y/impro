@@ -1,4 +1,4 @@
-import { enforceModuleAccess, assertCanCreateModuleEvent, buildModuleEntityMeta, recordModuleEventUsage } from "./modulys-access.js";
+import { enforceModuleAccess, assertCanCreateModuleEvent, buildModuleEntityMeta, recordModuleEventUsage, isFreeLimitError, renderFreeLimitUpgrade } from "./modulys-access.js";
 import { $, normalizeRoomId, randomRoomId, ensureRoom, verifyRoomPassword, rememberPassword, publicUrl } from "./core.js";
 const __modulysAccessOk = await enforceModuleAccess("improvote", { mode: "hard" });
 if (!__modulysAccessOk) throw new Error("Modulys access denied");
@@ -50,6 +50,7 @@ form.addEventListener("submit", async (event) => {
     rememberPassword(roomId, password);
     window.location.href = publicUrl("settings.html", roomId);
   } catch (error) {
+    if (isFreeLimitError(error) && renderFreeLimitUpgrade(status, "improvote", error)) return;
     status.textContent = error.message || "Impossible d'ouvrir la salle.";
     status.className = "status-text error";
   }
