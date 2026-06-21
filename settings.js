@@ -14,6 +14,10 @@ import {
   qrCodeUrl,
   copyToClipboard
 } from "./core.js";
+import { enforceModuleAccess } from "./modulys-access.js";
+const __modulysAccessOk = await enforceModuleAccess("improvote", { mode: "hard" });
+if (!__modulysAccessOk) throw new Error("Modulys access denied");
+
 
 const roomId = getRoomIdFromUrl();
 const missingRoom = $("#missingRoom");
