@@ -1,4 +1,4 @@
-const CACHE_NAME = "improvote-pwa-v2-footer-cgu-modulys-auth";
+const CACHE_NAME = "improvote-pwa-v3-modulys-free-limits";
 const APP_SHELL = [
   "./",
   "./index.html",
