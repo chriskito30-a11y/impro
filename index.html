@@ -3,16 +3,15 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Impro Vote Live</title>
-  <meta name="theme-color" content="#ff7a3d" />
+  <title>ImproVote — Modulys</title>
+  <meta name="description" content="ImproVote permet au public de voter depuis son téléphone pendant un match d’impro, une battle, un jury ou une soirée participative." />
+  <meta name="theme-color" content="#7c3aed" />
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="ImproVote" />
   <link rel="manifest" href="./manifest.webmanifest" />
   <link rel="icon" type="image/png" sizes="32x32" href="./icons/favicon-32.png" />
-  <link rel="icon" type="image/png" sizes="16x16" href="./icons/favicon-16.png" />
-  <link rel="apple-touch-icon" sizes="180x180" href="./icons/icon-180.png" />
   <link rel="stylesheet" href="./style.css" />
 </head>
 <body class="app-bg">
@@ -21,29 +20,35 @@
       <a class="module-suite-brand" href="./index.html"><span class="module-suite-mark">🎭</span><span>ImproVote</span></a>
       <div class="module-suite-actions">
         <a class="module-suite-btn" href="https://www.modulys.top/mes-modules.html">Mes modules</a>
+        <a class="module-suite-btn" href="https://www.modulys.top/">Modulys.top</a>
         <button id="modulysTopbarLogoutBtn" class="module-suite-btn module-suite-logout" type="button" hidden>Déconnexion</button>
       </div>
     </nav>
   </header>
   <main class="page-shell index-shell">
-    <section class="hero-card glow-card">
-      <p class="eyebrow">Impro Vote Live</p>
-      <h1>Crée une salle de vote en direct pour ton spectacle d'impro.</h1>
-      <p class="lead">Une salle, un mot de passe arbitre, des liens publics pour voter et afficher les résultats. Simple, rapide, stylé.</p>
+    <section class="hero-card glow-card suite-hero">
+      <p class="eyebrow">Module Modulys · Vote public en direct</p>
+      <h1>Créez un vote clair pour votre spectacle.</h1>
+      <p class="lead">ImproVote permet au public de voter depuis son téléphone pendant un match d’impro, une battle, un jury ou une soirée participative.</p>
+      <div class="suite-cta-row">
+        <a class="ghost-link big-btn" href="./demo.html">Voir une démo</a>
+        <a class="ghost-link big-btn" href="./vote.html">Rejoindre avec un code</a>
+        <a class="ghost-link big-btn" href="./screen.html">Afficher sur grand écran</a>
+      </div>
 
-      <form id="roomForm" class="form-grid big-form">
+      <form id="roomForm" class="form-grid big-form suite-create-form" aria-label="Créer une animation ImproVote">
         <label>
-          <span>Nom de la salle</span>
+          <span>Nom de l’animation</span>
           <input id="roomInput" autocomplete="off" placeholder="ex : cabaret-impro-juin" required />
-          <small>Utilisé dans les liens. Lettres, chiffres et tirets uniquement.</small>
+          <small>Ce nom sert à générer les liens de vote et d’écran public.</small>
         </label>
         <label>
-          <span>Mot de passe arbitre</span>
-          <input id="passwordInput" type="password" autocomplete="new-password" placeholder="Pour admin et réglages" required minlength="4" />
-          <small>Il ne sera pas mis dans les liens publics.</small>
+          <span>Mot de passe organisateur</span>
+          <input id="passwordInput" type="password" autocomplete="new-password" placeholder="Mot de passe organisateur" required minlength="4" />
+          <small>Il protège les réglages et le lancement du vote.</small>
         </label>
         <div class="actions-row">
-          <button class="primary-btn" type="submit">Créer / ouvrir la salle</button>
+          <button class="primary-btn" type="submit">Créer un vote</button>
           <button class="ghost-btn" type="button" id="randomRoomBtn">Nom aléatoire</button>
           <button class="ghost-btn install-pwa-btn" type="button" id="installPwaBtn" hidden>Installer l’app</button>
         </div>
@@ -51,26 +56,20 @@
       </form>
     </section>
 
-    <section class="feature-grid">
-      <article class="mini-card">
-        <strong>1. Configure</strong>
-        <span>Titre du spectacle, image principale, équipes, images carrées et durée du vote.</span>
-      </article>
-      <article class="mini-card">
-        <strong>2. Partage</strong>
-        <span>Un lien public pour le vote, un lien écran pour le vidéoprojecteur.</span>
-      </article>
-      <article class="mini-card">
-        <strong>3. Lance</strong>
-        <span>L'arbitre clique, le public vote, l'écran se met à jour en direct.</span>
-      </article>
+    <section class="feature-grid suite-steps" aria-label="Comment ça marche">
+      <article class="mini-card"><strong>Étape 1</strong><span>Préparez la salle, les équipes et la durée du vote.</span></article><article class="mini-card"><strong>Étape 2</strong><span>Partagez le lien ou le QR code aux spectateurs.</span></article><article class="mini-card"><strong>Étape 3</strong><span>Lancez le vote et affichez les résultats en direct.</span></article>
+    </section>
+
+    <section class="suite-section suite-grid-2" aria-label="Cas d’usage et offre">
+      <article class="mini-card suite-card"><strong>Cas d’usage</strong><span>Match d’improvisation · Battle artistique · Vote du public · Jury de spectacle</span></article>
+      <article class="mini-card suite-card"><strong>Offre actuelle</strong><span>Offre Découverte : 1 animation par mois, jusqu’à 30 participants.</span></article>
     </section>
   </main>
 
   <footer class="app-credit" aria-label="Crédits de l'application">
-    <span>© 2026 — Application créée par Christophe Gros - <a href="https://www.faistonshow.fr" target="_blank" rel="noopener">Fais Ton Show</a></span>
+    <span>© 2026 — Modulys · ImproVote</span>
     <span class="credit-separator" aria-hidden="true">•</span>
-    <a href="./cgu.html">CGU</a>
+    <a href="https://www.modulys.top/">Retour Modulys.top</a>
   </footer>
 
   <script type="module" src="./index.js"></script>
