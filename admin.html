@@ -16,6 +16,15 @@
   <link rel="stylesheet" href="./style.css" />
 </head>
 <body class="app-bg">
+  <header class="module-suite-header">
+    <nav class="module-suite-nav" aria-label="Navigation Modulys ImproVote">
+      <a class="module-suite-brand" href="./index.html"><span class="module-suite-mark">🎭</span><span>ImproVote</span></a>
+      <div class="module-suite-actions">
+        <a class="module-suite-btn" href="https://www.modulys.top/mes-modules.html">Mes modules</a>
+        <button id="modulysTopbarLogoutBtn" class="module-suite-btn module-suite-logout" type="button" hidden>Déconnexion</button>
+      </div>
+    </nav>
+  </header>
   <main class="page-shell admin-shell">
     <section id="missingRoom" class="panel-card" hidden>
       <h1>Salle introuvable</h1>
@@ -88,5 +97,6 @@
 
   <script type="module" src="./admin.js"></script>
   <script type="module" src="./pwa.js"></script>
+  <script type="module" src="./module-nav.js"></script>
 </body>
 </html>
