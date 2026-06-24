@@ -12,11 +12,12 @@ import {
   setOptionalImage,
   publicUrl,
   qrCodeUrl,
-  copyToClipboard
+  copyToClipboard,
+  friendlyErrorMessage
 } from "./core.js";
 import { enforceModuleAccess } from "./modulys-access.js";
 const __modulysAccessOk = await enforceModuleAccess("improvote", { mode: "hard" });
-if (!__modulysAccessOk) throw new Error("Modulys access denied");
+if (!__modulysAccessOk) throw new Error("Accès non autorisé");
 
 
 const roomId = getRoomIdFromUrl();
@@ -194,7 +195,7 @@ form?.addEventListener("submit", async (event) => {
     saveStatus.textContent = "Réglages enregistrés.";
     saveStatus.className = "status-text success";
   } catch (error) {
-    saveStatus.textContent = error.message || "Erreur lors de l'enregistrement.";
+    saveStatus.textContent = friendlyErrorMessage(error, "Erreur lors de l'enregistrement.");
     saveStatus.className = "status-text error";
   }
 });

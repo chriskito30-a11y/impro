@@ -15,7 +15,7 @@ import {
 } from "./core.js";
 import { enforceModuleAccess } from "./modulys-access.js";
 const __modulysAccessOk = await enforceModuleAccess("improvote", { mode: "hard" });
-if (!__modulysAccessOk) throw new Error("Modulys access denied");
+if (!__modulysAccessOk) throw new Error("Accès non autorisé");
 
 
 const roomId = getRoomIdFromUrl();
